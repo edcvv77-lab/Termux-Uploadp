@@ -12,4 +12,5 @@
     <color name="textPrimary">#F3F4F6</color>
     <color name="textSecondary">#B7BDC9</color>
     <color name="accent">#5CE1E6</color>
+    <color name="card">#FFFFFF</color>
 </resources>
