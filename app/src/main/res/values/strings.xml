@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ScanXfer Pro</string>
+    <string name="send_file">إرسال ملف</string>
+    <string name="send_files">إرسال عدة ملفات</string>
+    <string name="receive_file">استقبال عبر QR</string>
+    <string name="select_file_hint">لم يتم اختيار ملف بعد</string>
+    <string name="server_waiting">الجلسة جاهزة. امسح QR من الجهاز الثاني.</string>
+</resources>
