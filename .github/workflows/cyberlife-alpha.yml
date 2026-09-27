@@ -15,6 +15,9 @@ permissions:
 jobs:
   android-alpha:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
     steps:
       - name: Checkout
@@ -25,14 +28,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Godot 4.5 Android SDK packages
-        run: |
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager             "platform-tools"             "build-tools;35.0.0"             "platforms;android-35"             "cmdline-tools;latest"             "cmake;3.10.2.4988404"             "ndk;28.1.13356709"
 
       - name: Set up Gradle 9.5
         uses: gradle/actions/setup-gradle@v4
