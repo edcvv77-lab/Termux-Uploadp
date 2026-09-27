@@ -127,17 +127,25 @@ layout_mode = 2
 
 [node name="BrowserIntro" type="Label" parent="Margin/VBox/Workspace/BrowserPanel"]
 layout_mode = 2
-text = "Open real websites using Android's browser."
+text = "Real WebView browser. Downloads go to the phone's Downloads folder."
 
 [node name="UrlInput" type="LineEdit" parent="Margin/VBox/Workspace/BrowserPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "https://example.com"
+placeholder_text = "https://www.google.com"
 
-[node name="OpenUrlButton" type="Button" parent="Margin/VBox/Workspace/BrowserPanel"]
+[node name="BrowserButtons" type="HBoxContainer" parent="Margin/VBox/Workspace/BrowserPanel"]
+layout_mode = 2
+
+[node name="OpenUrlButton" type="Button" parent="Margin/VBox/Workspace/BrowserPanel/BrowserButtons"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Open URL"
+text = "Browse inside CyberLife"
+
+[node name="ExternalBrowserButton" type="Button" parent="Margin/VBox/Workspace/BrowserPanel/BrowserButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Open external browser"
 
 [node name="BrowserMessage" type="Label" parent="Margin/VBox/Workspace/BrowserPanel"]
 unique_name_in_owner = true
@@ -151,12 +159,31 @@ layout_mode = 2
 
 [node name="FilesIntro" type="Label" parent="Margin/VBox/Workspace/FilesPanel"]
 layout_mode = 2
-text = "Choose a phone folder. Android grants persistent access only to the folder you approve."
+text = "Real phone files. Access is limited to the Android folder you choose."
 
-[node name="PickFolderButton" type="Button" parent="Margin/VBox/Workspace/FilesPanel"]
+[node name="FilesButtons" type="HBoxContainer" parent="Margin/VBox/Workspace/FilesPanel"]
+layout_mode = 2
+
+[node name="PickFolderButton" type="Button" parent="Margin/VBox/Workspace/FilesPanel/FilesButtons"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Choose phone folder"
+
+[node name="RefreshFilesButton" type="Button" parent="Margin/VBox/Workspace/FilesPanel/FilesButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Refresh"
+
+[node name="OpenFileButton" type="Button" parent="Margin/VBox/Workspace/FilesPanel/FilesButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Open selected"
+
+[node name="FilesList" type="ItemList" parent="Margin/VBox/Workspace/FilesPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+allow_reselect = true
 
 [node name="FilesMessage" type="Label" parent="Margin/VBox/Workspace/FilesPanel"]
 unique_name_in_owner = true

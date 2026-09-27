@@ -2,27 +2,37 @@
 
 CyberLife is an Android-first first-person life simulator whose in-world computer can bridge to real Android capabilities with explicit user permission.
 
-## Alpha features
+## Current Alpha
 
-- First-person 3D apartment prototype.
-- Touch movement buttons plus mouse/keyboard desktop controls.
+- First-person apartment prototype with touch movement.
 - Bed, food, shower and work interactions.
-- Time, money, hunger, energy and hygiene simulation.
+- Time, money, hunger, energy, hygiene and health.
+- Automatic persistent save file under Godot's app storage.
 - Interactive in-world PC.
-- Desktop with Terminal, Browser, Files and Phone panels.
-- Godot Android Plugin v2 bridge.
-- Termux RUN_COMMAND integration: commands typed by the player are sent to the user's installed Termux and stdout/stderr is returned to the in-game terminal.
-- Android Storage Access Framework folder picker with persisted user-approved URI access.
-- Real web links via Android browser.
-- Real device summary (model, Android version, battery, Termux detection).
+- Real Termux command bridge with stdout/stderr returned to the in-game terminal.
+- Real Android folder selection through Storage Access Framework.
+- In-game Files tab lists real items from the user-approved phone folder and can open selected files.
+- Real WebView browser inside the CyberLife app with Back / Reload / Close controls.
+- Web downloads use Android DownloadManager and save to Downloads.
+- Device status panel.
+- External browser fallback.
 
-## Termux setup on Android
+## Termux setup
 
 1. Install a compatible Termux build.
-2. In Termux, set `allow-external-apps=true` in `~/.termux/termux.properties`.
-3. In CyberLife, open the in-game PC > Terminal and tap **Grant Termux permission**.
-4. Android may expose this under App info > Permissions > Additional permissions > Run commands in Termux environment.
-5. Only commands explicitly typed into the in-game terminal are forwarded.
+2. Add `allow-external-apps=true` to `~/.termux/termux.properties`.
+3. Run `termux-reload-settings`.
+4. In CyberLife PC > Terminal, tap **Grant Termux permission** and approve Android's Run commands in Termux permission.
+
+Only commands explicitly entered by the player are forwarded.
+
+## File access
+
+CyberLife does not request unrestricted storage. In PC > Files, choose a folder using Android's system picker. Android grants access only to that user-approved tree and CyberLife persists the URI permission where the provider allows it.
+
+## Browser
+
+PC > Browser opens a real Android WebView inside the app. Downloads initiated from the WebView are sent through Android DownloadManager to the public Downloads folder.
 
 ## Development
 
@@ -30,12 +40,12 @@ Godot project: `cyberlife/project.godot`
 
 Android bridge source: `cyberlife/android_plugin`
 
-The GitHub Actions workflow `.github/workflows/cyberlife-alpha.yml` builds the Android bridge AAR, installs it into the Godot addon, then exports a debug Android APK.
+CI workflow: `.github/workflows/cyberlife-alpha.yml`
 
 ## Security model
 
 - No hidden Termux commands.
 - No unrestricted filesystem permission.
-- File access uses Android's official folder picker.
-- Termux execution requires both Android permission and Termux's external-app opt-in.
-- Cyber training environments will be separate from real-device operations.
+- File access uses Android's Storage Access Framework.
+- Termux execution requires Android permission plus Termux's external-app opt-in.
+- Offensive cyber-training content will remain isolated from real-device operations.
