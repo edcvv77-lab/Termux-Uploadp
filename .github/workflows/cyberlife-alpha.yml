@@ -56,8 +56,8 @@ jobs:
 
       - name: Install Android Gradle build template
         run: |
-          mkdir -p cyberlife/android/build
-          unzip -q "$HOME/.local/share/godot/export_templates/4.5.1.stable/android_source.zip" -d cyberlife/android/build
+          rm -rf cyberlife/android/build
+          godot --headless --path cyberlife --install-android-build-template
 
       - name: Import project
         run: godot --headless --editor --path cyberlife --quit
