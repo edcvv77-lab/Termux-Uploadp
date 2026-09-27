@@ -26,8 +26,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
+      - name: Set up Gradle 9.5
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
 
       - name: Build CyberLife Android bridge AAR
         run: gradle -p cyberlife/android_plugin :plugin:assembleDebug
