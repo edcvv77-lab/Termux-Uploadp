@@ -1,26 +1,49 @@
 extends Node
 
+signal termux_result(execution_id: int, stdout: String, stderr: String, exit_code: int)
+signal directory_picked(uri: String)
+signal bridge_error(message: String)
+
 var native_bridge: Object = null
 
 func _ready() -> void:
     if Engine.has_singleton("CyberLifeBridge"):
         native_bridge = Engine.get_singleton("CyberLifeBridge")
+        if native_bridge.has_signal("termux_result"):
+            native_bridge.connect("termux_result", _on_native_termux_result)
+        if native_bridge.has_signal("directory_picked"):
+            native_bridge.connect("directory_picked", _on_native_directory_picked)
+        if native_bridge.has_signal("bridge_error"):
+            native_bridge.connect("bridge_error", _on_native_bridge_error)
 
 func has_native_bridge() -> bool:
     return native_bridge != null
+
+func is_termux_available() -> bool:
+    return native_bridge != null and native_bridge.has_method("isTermuxAvailable") and native_bridge.call("isTermuxAvailable")
+
+func request_termux_permission() -> bool:
+    if native_bridge == null or not native_bridge.has_method("requestTermuxPermission"):
+        return false
+    native_bridge.call("requestTermuxPermission")
+    return true
 
 func run_termux_command(command: String) -> Dictionary:
     command = command.strip_edges()
     if command.is_empty():
         return {"ok": false, "message": "Empty command."}
+    if command.length() > 32768:
+        return {"ok": false, "message": "Command is too long."}
 
     if native_bridge != null and native_bridge.has_method("runTermuxCommand"):
-        var result = native_bridge.call("runTermuxCommand", command)
-        return {"ok": true, "message": str(result)}
+        var execution_id = int(native_bridge.call("runTermuxCommand", command))
+        if execution_id >= 0:
+            return {"ok": true, "execution_id": execution_id, "message": "Queued in Termux."}
+        return {"ok": false, "message": "Termux command could not be started. Check permission and allow-external-apps."}
 
     return {
         "ok": false,
-        "message": "[Mock mode] Native Termux bridge is not installed yet. Command was not executed: " + command
+        "message": "[Desktop preview] Android Termux bridge is unavailable."
     }
 
 func open_url(url: String) -> Dictionary:
@@ -31,25 +54,29 @@ func open_url(url: String) -> Dictionary:
         safe_url = "https://" + safe_url
 
     if native_bridge != null and native_bridge.has_method("openBrowser"):
-        native_bridge.call("openBrowser", safe_url)
-        return {"ok": true, "message": "Opened with Android bridge."}
+        var opened = bool(native_bridge.call("openBrowser", safe_url))
+        return {"ok": opened, "message": "Opened browser." if opened else "Could not open browser."}
 
     var err := OS.shell_open(safe_url)
-    return {
-        "ok": err == OK,
-        "message": "Opened in the system browser." if err == OK else "Could not open URL."
-    }
+    return {"ok": err == OK, "message": "Opened in the system browser." if err == OK else "Could not open URL."}
 
 func pick_directory() -> Dictionary:
     if native_bridge != null and native_bridge.has_method("pickDirectory"):
         native_bridge.call("pickDirectory")
         return {"ok": true, "message": "Android folder picker opened."}
 
-    return {
-        "ok": false,
-        "message": "[Mock mode] Android Storage Access Framework bridge is not installed yet."
-    }
+    return {"ok": false, "message": "[Desktop preview] Android folder picker is unavailable."}
 
 func device_summary() -> String:
-    var mode := "native bridge" if has_native_bridge() else "mock bridge"
-    return "Platform: %s\nBridge: %s\nLocale: %s" % [OS.get_name(), mode, TranslationServer.get_locale()]
+    if native_bridge != null and native_bridge.has_method("deviceSummary"):
+        return str(native_bridge.call("deviceSummary"))
+    return "Platform: %s\nBridge: preview\nLocale: %s" % [OS.get_name(), TranslationServer.get_locale()]
+
+func _on_native_termux_result(execution_id: int, stdout: String, stderr: String, exit_code: int) -> void:
+    termux_result.emit(execution_id, stdout, stderr, exit_code)
+
+func _on_native_directory_picked(uri: String) -> void:
+    directory_picked.emit(uri)
+
+func _on_native_bridge_error(message: String) -> void:
+    bridge_error.emit(message)

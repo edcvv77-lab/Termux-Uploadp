@@ -1,0 +1,73 @@
+name: Build CyberLife Alpha
+
+on:
+  push:
+    branches:
+      - feature/cyberlife-prototype
+    paths:
+      - 'cyberlife/**'
+      - '.github/workflows/cyberlife-alpha.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-alpha:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build CyberLife Android bridge AAR
+        run: gradle -p cyberlife/android_plugin :plugin:assembleDebug
+
+      - name: Install bridge into Godot addon
+        run: |
+          mkdir -p cyberlife/addons/CyberLifeBridge/bin/debug
+          cp cyberlife/android_plugin/plugin/build/outputs/aar/CyberLifeBridge-debug.aar cyberlife/addons/CyberLifeBridge/bin/debug/
+
+      - name: Download Godot 4.5.1
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
+          unzip -q Godot_v4.5.1-stable_linux.x86_64.zip
+          chmod +x Godot_v4.5.1-stable_linux.x86_64
+          sudo mv Godot_v4.5.1-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Install Godot Android export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz
+          mkdir -p /tmp/godot-templates
+          unzip -q Godot_v4.5.1-stable_export_templates.tpz -d /tmp/godot-templates
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.5.1.stable"
+          cp -R /tmp/godot-templates/templates/. "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
+
+      - name: Install Android Gradle build template
+        run: |
+          mkdir -p cyberlife/android/build
+          unzip -q "$HOME/.local/share/godot/export_templates/4.5.1.stable/android_source.zip" -d cyberlife/android/build
+
+      - name: Import project
+        run: godot --headless --editor --path cyberlife --quit
+
+      - name: Export debug APK
+        run: |
+          mkdir -p build
+          godot --headless --path cyberlife --export-debug "Android" ../build/CyberLife-alpha-debug.apk
+
+      - name: Upload CyberLife APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CyberLife-alpha-debug-apk
+          path: build/CyberLife-alpha-debug.apk
+          if-no-files-found: error

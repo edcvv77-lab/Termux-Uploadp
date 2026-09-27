@@ -1,47 +1,41 @@
-# CyberLife Prototype
+# CyberLife Alpha
 
-A first-person Android-oriented life-simulator prototype built with Godot 4.
+CyberLife is an Android-first first-person life simulator whose in-world computer can bridge to real Android capabilities with explicit user permission.
 
-## Current vertical slice
+## Alpha features
 
-- First-person movement inside a simple 3D room.
-- Interactable computer.
-- In-game desktop UI.
-- Terminal screen with local preview commands.
-- Android bridge abstraction ready for a native plugin.
-- Real URL opening through the system browser as the first web milestone.
-- Storage Access Framework and Termux integration hooks are defined but intentionally remain mock-only until the native Android plugin is added.
+- First-person 3D apartment prototype.
+- Touch movement buttons plus mouse/keyboard desktop controls.
+- Bed, food, shower and work interactions.
+- Time, money, hunger, energy and hygiene simulation.
+- Interactive in-world PC.
+- Desktop with Terminal, Browser, Files and Phone panels.
+- Godot Android Plugin v2 bridge.
+- Termux RUN_COMMAND integration: commands typed by the player are sent to the user's installed Termux and stdout/stderr is returned to the in-game terminal.
+- Android Storage Access Framework folder picker with persisted user-approved URI access.
+- Real web links via Android browser.
+- Real device summary (model, Android version, battery, Termux detection).
 
-## Run
+## Termux setup on Android
 
-1. Install Godot 4.3+.
-2. Import `cyberlife/project.godot`.
-3. Run the project.
-4. Walk to the computer and press **E**.
+1. Install a compatible Termux build.
+2. In Termux, set `allow-external-apps=true` in `~/.termux/termux.properties`.
+3. In CyberLife, open the in-game PC > Terminal and tap **Grant Termux permission**.
+4. Android may expose this under App info > Permissions > Additional permissions > Run commands in Termux environment.
+5. Only commands explicitly typed into the in-game terminal are forwarded.
 
-Controls: WASD, mouse, E, Escape.
+## Development
 
-## Architecture
+Godot project: `cyberlife/project.godot`
 
-`scripts/android_bridge.gd` is the only layer game code talks to for device functions. On desktop it runs in mock mode. On Android it will bind to a Godot Android plugin named `CyberLifeBridge`.
+Android bridge source: `cyberlife/android_plugin`
 
-Planned native capabilities are permission-gated:
+The GitHub Actions workflow `.github/workflows/cyberlife-alpha.yml` builds the Android bridge AAR, installs it into the Godot addon, then exports a debug Android APK.
 
-- Termux RUN_COMMAND integration for commands explicitly entered by the player.
-- Android Storage Access Framework for user-selected folders.
-- Embedded or system web browsing.
-- Downloads.
-- Battery/network/device status.
-- Safe Android intents for user-approved device actions.
+## Security model
 
-The game will not silently execute commands or request unrestricted storage access.
-
-## Next milestone
-
-1. Native Kotlin Android plugin.
-2. Termux command result callback (stdout/stderr).
-3. Storage folder picker + persisted URI permission.
-4. Mobile touch controls.
-5. Apartment interactions: bed, food, shower, money, time.
-6. PC hardware shop and progression.
-7. Separate cyber-lab mode for CTF-style training.
+- No hidden Termux commands.
+- No unrestricted filesystem permission.
+- File access uses Android's official folder picker.
+- Termux execution requires both Android permission and Termux's external-app opt-in.
+- Cyber training environments will be separate from real-device operations.
