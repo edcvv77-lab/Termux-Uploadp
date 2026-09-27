@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -35,7 +35,7 @@ jobs:
       - name: Install bridge into Godot addon
         run: |
           mkdir -p cyberlife/addons/CyberLifeBridge/bin/debug
-          cp cyberlife/android_plugin/plugin/build/outputs/aar/CyberLifeBridge-debug.aar cyberlife/addons/CyberLifeBridge/bin/debug/
+          cp cyberlife/android_plugin/plugin/build/outputs/aar/plugin-debug.aar cyberlife/addons/CyberLifeBridge/bin/debug/CyberLifeBridge-debug.aar
 
       - name: Download Godot 4.5.1
         run: |
