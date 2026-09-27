@@ -10,7 +10,7 @@ val pluginPackageName = "com.edcvv77.cyberlife.bridge"
 
 android {
     namespace = pluginPackageName
-    compileSdk = 36
+    compileSdk = 35
 
     buildFeatures {
         buildConfig = true

@@ -26,6 +26,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Godot 4.5 Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager             "platform-tools"             "build-tools;35.0.0"             "platforms;android-35"             "cmdline-tools;latest"             "cmake;3.10.2.4988404"             "ndk;28.1.13356709"
+
       - name: Set up Gradle 9.5
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -54,18 +62,14 @@ jobs:
           mkdir -p "$HOME/.local/share/godot/export_templates/4.5.1.stable"
           cp -R /tmp/godot-templates/templates/. "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
 
-      - name: Install Android Gradle build template
-        run: |
-          rm -rf cyberlife/android/build
-          godot --headless --path cyberlife --install-android-build-template
-
       - name: Import project
         run: godot --headless --editor --path cyberlife --quit
 
       - name: Export debug APK
         run: |
           mkdir -p build
-          godot --headless --path cyberlife --export-debug "Android" ../build/CyberLife-alpha-debug.apk
+          rm -rf cyberlife/android/build
+          godot --headless --path cyberlife             --install-android-build-template             --export-debug "Android"             ../build/CyberLife-alpha-debug.apk
 
       - name: Upload CyberLife APK
         uses: actions/upload-artifact@v4
